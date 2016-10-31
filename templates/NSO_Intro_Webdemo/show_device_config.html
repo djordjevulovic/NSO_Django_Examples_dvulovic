@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>NSO Intro Webdemo</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static "css/nso_intro.css" %}">
+</head>
+<body>
+        <h1>Show Device Config</h1>
+
+        <form id="form1" method="post" class="form-horizontal" action="/nso_intro/show_device_config/">
+
+            {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+                {{ field.errors }}
+                {{ field.help_text }}
+                {{ field }}
+                <BR>
+            {% endfor %}
+            <BR>
+             <button type="submit" class="save btn btn-default">Submit</button>
+        </form>
+
+</body>
+</html>

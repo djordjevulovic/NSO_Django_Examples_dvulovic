@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>NSO Intro Webdemo</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static "css/nso_intro.css" %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+        <h1>Show Interface Config</h1>
+
+        <form id="form1" method="post" class="form-horizontal"  action="/nso_intro/show_interface_config/">
+
+            {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+                {{ field.errors }}
+                {{ field.help_text }}
+                {{ field }}
+                <br><br>
+            {% endfor %}
+            <BR>
+             <button type="submit" id="submit-btn" class="save btn btn-default">Submit</button>
+        </form>
+<script>
+$(document).ready( function() {
+
+    get_intf_types();
+    get_intf_numbers();
+
+    $("#id_device").change(function(){
+        get_intf_types();
+        get_intf_numbers();
+    });
+
+    $("#id_intf_type").change(function(){
+        get_intf_numbers();
+    });
+
+    function get_intf_types(){
+              jQuery.ajax({
+              async: false,
+              type: "POST",
+              url: "/a/get/intf_type/",
+              data: "device=" + $('#id_device').val(),
+              success: function(response) {
+
+                    result = JSON.parse(response);
+
+                    if (result) {
+
+                        $('#id_intf_type').empty()  // Use to empty the select
+
+                        // Now we append the intf type options we've received
+                        for(var i=0;i < result.item_list.length;i++){
+                            $('#id_intf_type').append($('<option>', {
+                                value: result.item_list[i]['id'],
+                                text: result.item_list[i]['name']
+                        }));
+                        }
+
+                    } else {
+                        console.log('error');
+                    }
+              }
+              });
+    }
+
+    function get_intf_numbers(){
+              jQuery.ajax({
+              async: false,
+              type: "POST",
+              url: "/a/get/intf_number/",
+              data: JSON.stringify( { "device": $('#id_device').val(), "intf-type": $('#id_intf_type').val() } ),
+              success: function(response) {
+
+                    result = JSON.parse(response);
+
+                    if (result) {
+
+                        $('#id_intf_number').empty()  // Use to empty the select
+
+                        // Now we append the intf type options we've received
+                        for(var i=0;i < result.item_list.length;i++){
+                            $('#id_intf_number').append($('<option>', {
+                                value: result.item_list[i]['id'],
+                                text: result.item_list[i]['name']
+                        }));
+                        }
+
+                    } else {
+                        console.log('error');
+                    }
+              }
+              });
+    }
+
+});
+
+</script>
+</body>
+</html>
