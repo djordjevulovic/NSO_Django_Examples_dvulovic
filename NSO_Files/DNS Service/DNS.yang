@@ -1,0 +1,42 @@
+module DNS {
+
+  namespace "http://com/example/DNS";
+  prefix DNS;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import tailf-common { 
+    prefix tailf; 
+  }
+
+  augment /ncs:services {
+    list DNS {
+      key device, dns_server_ip;
+
+	  uses ncs:service-data;
+      ncs:servicepoint "DNS";
+
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+        tailf:info "Device name";
+        mandatory true;
+      }
+
+	  leaf dns_server_ip {
+        type inet:ipv4-address;
+        mandatory true;
+        tailf:info "DNS Server IP Address";
+      }
+		  
+	}
+	
+  }
+}
